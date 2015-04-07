@@ -1,0 +1,215 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{enumerate}
+\lstset{breaklines=true}
+
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ (\hmwkClassInstructor): \hmwkTitle}
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework\ \#1}
+\newcommand{\hmwkDueDate}{April 14, 2015}
+\newcommand{\hmwkClass}{Web Information Management}
+\newcommand{\hmwkClassTime}{TTh 12:10}
+\newcommand{\hmwkClassInstructor}{Professor Fang}
+\newcommand{\hmwkAuthorName}{Rick Sullivan}
+
+%
+% Title Page
+%
+
+\title{
+    \vspace{2in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+    \vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\begin{homeworkProblem}
+    Assume that a search engine returns a ranked list of 10 total documents for a given query.
+    According to the ground truth labeling, there are 7 relevant documents for this query, and that the
+    relevant documents in the ranked list are in the 1st, 3rd, 5th, 8th, and 10th positions in the ranked
+    results.
+    \begin{enumerate}
+        \item Calculate Precision, Recall, F-measure, nDCG, at the 10 retrived documents.
+        \item Calculate the interpolated precision value for each of the following standard recall levels:
+        \[\{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0\}\] for this individual query.
+        \item Calculate the average precision.
+    \end{enumerate}
+
+    \textbf{Part 1}
+    \\
+    Precision is determined by \[\frac{\#\ of\ returned\ relevant\ documents}{total\ \#\ of\ returned\ documents}.\]
+    We have 5 relevant documents returned, and 10 total returned documents, so \(P=0.5=50\%\).
+    \\
+
+    Recall is determined by \[\frac{\#\ of\ returned\ relevant\ documents}{total\ \#\ of\ relevant\ documents}.\]
+    We have 5 relevant documents returned, and 7 total relevant documents, so \(R=5/7\approx0.714=71.4\%\).
+    \\
+
+    F-measure is the harmonic mean of recall and precision, 
+    \[
+    \begin{split}
+        F &= \frac{2PR}{P+R}\\
+        &=  \frac{2(0.5)(0.714)}{0.5+0.714}\\
+        &\approx 0.5881
+    \end{split}
+    \]
+    \\
+
+    nDCG
+    \\
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    The \textit{San Jose Mercury News} repository from 2000 to 2005 (i.e., 5 years) contains about 400
+    million word tokens, with the vocabulary size about 1 million. What would be a good estimation
+    of the vocabulary size one would get in indexing the \textit{San Jose Mercury News} repository from
+    2000 to 2010 (i.e., 10 years)?
+    \\
+
+    \textbf{Solution}
+    \\
+
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    Assume the following documents comprise your corpus:
+    \\
+    Doc 1: banking on banks to raise the interest rate over the previous interest
+    \\
+    Doc 2: jogging along the river bank to look at the sailboats
+    \\
+    Doc 3: jogging to the bank to look at the interest rate
+    \\
+    Doc 4: buzzer-beating shot banked in!
+    \\
+    Doc 5: interest of the scenic outlooks on the banks of the Potomac River
+    \\
+    Assume that you remove stopwords, lower cases, and do stemming.
+    \\
+\end{homeworkProblem}
+
+%\pagebreak
+%\section{Appendix}
+
+\end{document}
