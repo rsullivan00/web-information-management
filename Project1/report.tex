@@ -1,0 +1,267 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{enumerate}
+\lstset{breaklines=true}
+
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ (\hmwkClassInstructor): \hmwkTitle}
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Project \ \#1}
+\newcommand{\hmwkDueDate}{April 23, 2015}
+\newcommand{\hmwkClass}{Web Information Management}
+\newcommand{\hmwkClassTime}{TTh 12:10}
+\newcommand{\hmwkClassInstructor}{Professor Fang}
+\newcommand{\hmwkAuthorName}{Rick Sullivan}
+
+%
+% Title Page
+%
+
+\title{
+    \vspace{2in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+    \vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\begin{homeworkProblem}
+    \textbf{Test the performance of retrieval algorithm ``RawTF'' with two types of text data.}
+    \\
+
+    \begin{enumerate}
+        \item 
+            Results from RawTF without further processing are on page~\pageref{sec:rawtf}. Results were, as expected, unexceptional.
+            Stemming and removig stopwords gave the results on page~\pageref{sec:rawtf_porter_nostopw}.
+            \\
+
+            Using stemming and removing stopwords improved our results across the board. We improve interpolated recall-precision averages, average precision, and R-precision.
+            \\
+
+            These first stemmed results are using the Porter stemming algorithm. For future reference, anytime I mention stemming in this report, assume I am using the Porter algorithm.
+            \\
+            Using the Krovetz stemming algorithm instead seems to further improve our results, which can be seen on page~\pageref{sec:rawtf_krovetz_nostopw}.
+
+        \item
+            The previously mentioned results using Porter stemming also had their stopwords removed. To test the remaining cases around stopwords, I tested RawTF with removing stopwords, and Porter stemming without removing stopwords, which can be found on pages~\pageref{sec:rawtf_nostopw} and~\pageref{sec:rawtf_porter_nostopw}, respectively.
+            \\
+
+            \begin{figure}[H]
+                \caption{Results from RawTF and stemmed RawTF including or removing stopwords.}
+                \begin{tabular}{l c c | c c }
+                    & \multicolumn{2}{c}{RawTF} & \multicolumn{2}{c}{RawTF with Porter stemming}\\ 
+                    & Avg precision & R-precision & Avg precision & R-precision \\ \cline{2-5}
+                    Stopwords included & 0.0449 & 0.0712 & 0.0444 & 0.0546 \\
+                    Stopwords removed & 0.1495 & 0.1732 & 0.1224 & 0.1372
+                \end{tabular}
+            \end{figure}
+
+            Removing stopwords improves our query results in all tested cases.
+    \end{enumerate}
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    \textbf{Implement three different retrieval algorithms and evaluate their performance.}
+    \\
+
+    All algorithms were tested using Porter stemming and stopword removal. Raw results can be found in the Appendix from page~\pageref{sec:rawtfidf} and on.
+
+    \begin{figure}[H]
+    \lstinputlisting[language=C++]{rawtfidf.cpp}
+    \caption{RawTFIDF implementation.}
+    \end{figure}
+
+    \begin{figure}[H]
+    \lstinputlisting[language=C++]{logtfidf.cpp}
+    \caption{LogTFIDF implementation.}
+    \end{figure}
+
+    \begin{figure}[H]
+    \lstinputlisting[language=C++]{okapi.cpp}
+    \caption{Okapi implementation.}
+    \end{figure}
+
+    \begin{figure}[H]
+    \lstinputlisting[language=C++]{custom.cpp}
+    \caption{Custom algorithm implementation.}
+    \end{figure}
+
+    \begin{figure}[H]
+        \caption{Performance results from various retrival algorithms.}
+        \centering
+        \begin{tabular}{c | c c}
+            & Avg precision & R-precision \\ \hline
+            RawTF & 0.1224 & 0.1372 \\ 
+            RawTFIDF & 0.1491 & 0.1557 \\ 
+            LogTFIDF & 0.1770 & 0.1958 \\ 
+            Okapi & 0.1694 & 0.1701 \\ 
+            Custom & 0.1698 & 0.1713 \\ 
+        \end{tabular}
+    \end{figure}
+
+    LogTFIDF seems to edge out the other algorithms for our test cases. LogTFIDF is popular in practice, and these results seem to validate its popularity.
+    \\
+
+    My custom algorithm is aimed at increasing the weight of important query terms, as well as inflating the score of short documents. While these tests do not illustrate whether shorter documents are actually favored, my custom algorithm seems to keep up with other IDF algorithms, which it is somewhat similar to.
+
+\end{homeworkProblem}
+\pagebreak
+\section{Appendix}
+
+\subsection{Part 1 results}
+\subsubsection{RawTF} 
+\label{sec:rawtf}
+\lstinputlisting{results_rawtf.txt}
+
+\subsubsection{RawTF with Porter stemming and stopwords removed} \label{sec:rawtf_porter_nostopw}
+\lstinputlisting{results_rawtf_stemmed_nostopw.txt}
+
+\subsubsection{RawTF with Krovetz stemming and stopwords removed} \label{sec:rawtf_krovetz_nostopw}
+\lstinputlisting{results_rawtf_krovetz_nostopw.txt}
+
+\subsubsection{RawTF with Porter stemming (stopwords included)}
+\label{sec:rawtf_porter}
+\lstinputlisting{results_rawtf_stemmed_stopw.txt}
+
+\subsubsection{RawTF with stopwords removed)}
+\label{sec:rawtf_nostopw}
+\lstinputlisting{results_rawtf_nostopw.txt}
+
+\pagebreak
+
+\subsection{Part 2 results}
+\subsubsection{RawTFIDF} 
+\label{sec:rawtfidf}
+\lstinputlisting{results_rawtfidf_stemmed_nostopw.txt}
+
+\subsubsection{LogTFIDF} 
+\label{sec:logtfidf}
+\lstinputlisting{results_logtfidf_stemmed_nostopw.txt}
+
+\subsubsection{Okapi} 
+\label{sec:okapi}
+\lstinputlisting{results_okapi_stemmed_nostopw.txt}
+
+\subsubsection{Custom} 
+\label{sec:custom}
+\lstinputlisting{results_custom_stemmed_nostopw.txt}
+\end{document}
