@@ -52,6 +52,10 @@ class SimilarityTests(unittest.TestCase):
             0.9365
         ),
         (
+            (np.array([5, 4, 2, 0, 3]), np.array([4, 4, 1, 4, 3])),
+            0.9365
+        ),
+        (
             (np.array([1, 0, -1]), np.array([-1, 0, 1])),
             -1.0
         )

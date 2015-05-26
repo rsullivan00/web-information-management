@@ -1,5 +1,5 @@
 import numpy as np
-from similarity import cosine_similarity
+from similarity import cosine_similarity, pearson_correlation
 
 
 def train_users(users, train_file='train.txt'):
@@ -9,34 +9,68 @@ def train_users(users, train_file='train.txt'):
         users[i] = [int(x) for x in line.split()]
 
 
-def predict_score_batch(users, user_id, movie_ids):
+def predict_score_batch_pearson(users, user_id, movie_ids):
+    weights = [pearson_correlation(users[user_id], u) for
+               u in users[:200]]
+    user_averages = [np.average(u) for u in users[:200]]
+
+    ratings = []
+    r_avg = np.average([x for x in users[user_id] if x > 0])
+    for movie_id in movie_ids:
+        sum_w = 0
+        rating = 0
+        # Only compare with previous users.
+        for i, w in enumerate(weights):
+            user = users[i]
+            if user[movie_id] == 0:
+                continue
+
+            user_avg = user_averages[i]
+
+            sum_w += np.abs(w)
+            rating += (w * (user[movie_id] - user_avg))
+
+        if sum_w != 0:
+            rating = r_avg + (rating/sum_w)
+        else:
+            # If no relevant info was found, guess an average score.
+            rating = r_avg
+
+        rating = int(np.rint(rating))
+        if rating > 5:
+            rating = 5
+        elif rating < 1:
+            rating = 1
+
+        ratings.append(rating)
+
+    return ratings
+
+
+def predict_score_batch_cosine(users, user_id, movie_ids):
     weights = [cosine_similarity(users[user_id], u) for
-               u in users[:user_id]]
+               u in users[:200]]
 
     ratings = []
     for movie_id in movie_ids:
         sum_w = 0
-        rating = 3
+        rating = 0
         # Only compare with previous users.
-        for i in range(user_id):
+        for i, w in enumerate(weights):
             user = users[i]
-            if user[movie_id] == 0 or np.isnan(user[movie_id]):
+            if user[movie_id] == 0:
                 continue
 
-            w = weights[i]
             sum_w += w
             rating += (w * user[movie_id])
 
         if sum_w != 0:
             rating /= sum_w
+        else:
+            # If no relevant info was found, guess a score of 3.
+            rating = 3
 
         rating = int(np.rint(rating))
-
-        # Account for results outside of valid range.
-        if rating > 5:
-            rating = 5
-        elif rating < 1:
-            rating = 1
         ratings.append(rating)
 
     return ratings
@@ -44,12 +78,12 @@ def predict_score_batch(users, user_id, movie_ids):
 
 def process_stored_data(users, user_id, movie_ids, results):
     if len(movie_ids) > 0:
-        ratings = predict_score_batch(users, user_id, movie_ids)
+        ratings = predict_score_batch_pearson(users, user_id, movie_ids)
         for m_id, r in zip(movie_ids, ratings):
             if r < 1 or r > 5:
                 raise Exception('Rating %d' % r)
             users[user_id][m_id] = r
-            results.append((user_id, m_id+1, r))
+            results.append((user_id+1, m_id+1, r))
 
 
 def test_dataset(users, dataset_file):
@@ -61,33 +95,25 @@ def test_dataset(users, dataset_file):
     dataset = [[int(e) for e in data] for data in dataset]
     current_user_id = dataset[0][0] - 1
     movie_ids = []
-    ratings = []
     results = []
     for user_id, movie_id, rating in dataset:
         user_id -= 1
         movie_id -= 1
-        if user_id == current_user_id:
-            if rating == 0:
-                movie_ids.append(movie_id)
-                ratings.append(rating)
-            else:
-                users[user_id][movie_id] = rating
-            continue
-
-        process_stored_data(users, user_id, movie_ids, results)
-
-        # Initialize new batch
         print('User %d' % user_id, end='\r')
-        current_user_id = user_id
-        if rating == 0:
-            movie_ids = [movie_id]
-            ratings = [rating]
-        else:
-            users[user_id][movie_id] = rating
-            movie_ids = []
-            ratings = []
 
-    process_stored_data(users, dataset[-1][0]-1, movie_ids, results)
+        # If it's a new user, process buffer and reinitialize.
+        if user_id != current_user_id:
+            process_stored_data(users, current_user_id, movie_ids, results)
+            current_user_id = user_id
+            movie_ids = []
+
+        if rating == 0:
+            movie_ids.append(movie_id)
+        else:
+            movie_ids.append(movie_id)
+            users[user_id][movie_id] = rating
+
+    process_stored_data(users, current_user_id, movie_ids, results)
 
     return results
 
@@ -114,7 +140,7 @@ def main():
     num_users = 500
     num_movies = 1000
     users = [[0] * num_movies] * num_users
-    train_users(users)
+    train_users(users, 'train.txt')
     test_all(users)
 
 main()
