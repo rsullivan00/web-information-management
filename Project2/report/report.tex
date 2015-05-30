@@ -1,0 +1,278 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{enumerate}
+\lstset{breaklines=true}
+
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ (\hmwkClassInstructor): \hmwkTitle}
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Project \ \#2}
+\newcommand{\hmwkDueDate}{May 30, 2015}
+\newcommand{\hmwkClass}{Web Information Management}
+\newcommand{\hmwkClassTime}{TTh 12:10}
+\newcommand{\hmwkClassInstructor}{Professor Fang}
+\newcommand{\hmwkAuthorName}{Rick Sullivan}
+
+%
+% Title Page
+%
+
+\title{
+    \vspace{2in}
+    \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+    \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+    \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+    \vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\begin{homeworkProblem}
+    \textbf{Basic user-based collaorative filtering algorithms}
+    \\
+
+    The plain cosine similarity method resulted in a root-mean-square error of 0.796. 
+    
+    Implementing the Pearson Correlation method resulted in a error \textit{increase} to 0.886. I expected Pearson Correlation to improve my prediction accuraccy; my findings may be due to a small bug remaining in my implementation. There could be a few other explanations, however. Pearson correlation can be inaccurate for small sample sizes. In this user-based algorithm, users often have very few items commonly rated, which could reduce the effectiveness of Pearson correlation.
+    \\
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Pearson Correlation}\\ \hline
+            GIVEN 5 & 0.959\\
+            GIVEN 10 & 0.863\\
+            GIVEN 20 & 0.842\\
+            OVERALL & 0.886
+        \end{tabular}
+    \end{table}
+
+    \textbf{Extensions to the basic user-based collaborative filtering algorithms}
+    \\
+
+    Applying inverse user frequency seemed to push predicted ratings to very extreme scores. Predicted scores were often outside of the 1-5 range, and thus resulted in \textbf{many} scores of 1 and 5. Error levels increased to 1.218 as a result.
+
+    Case amplification with $\rho=2.5$ also resulted in an accuraccy loss. Combining both of these techniques led to similar results, with an error of 1.258.
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Pearson w/ IUF}\\ \hline
+            GIVEN 5 & 1.313\\
+            GIVEN 10 & 1.162\\
+            GIVEN 20 & 1.177\\
+            OVERALL & 1.218
+        \end{tabular}
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Pearson w/ Case Amp.}\\ \hline
+            GIVEN 5 & 1.344\\
+            GIVEN 10 & 1.168\\
+            GIVEN 20 & 1.239\\
+            OVERALL & 1.256
+        \end{tabular}
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Pearson w/ IUF \& Case Amp.}\\ \hline
+            GIVEN 5 & 1.329\\
+            GIVEN 10 & 1.194\\
+            GIVEN 20 & 1.241\\
+            OVERALL & 1.258
+        \end{tabular}
+    \end{table}
+
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    \textbf{Item-Based Collaborative Filtering Algorithm}
+    \\
+
+    A basic implementation of item-based collaborative filtering gave results just behind the basic algorithm. When comparing the results files of this approach and the previous user-based algorithms, I noticed that many of the rankings were different, even though both resulted in similar accuracies.
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Item-Based Adj.\ Cosine}\\ \hline
+            GIVEN 5 & 0.902\\
+            GIVEN 10 & 0.806\\
+            GIVEN 20 & 0.796\\
+            OVERALL & 0.833
+        \end{tabular}
+    \end{table}
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    \textbf{Implement your own algorithm}
+    \\
+
+    I experimented with a few different approaches to lowering the error of the algorithms used. The simplest approach was simply to take the mode of the scores provided by the previous algorithms. This actually lowered the accuracy, so I instead focused on the item-based algorithm.
+    \\
+
+    I found that centering the scores in the item-based algorithm led to a slight increase in accuracy. The algorithm still uses adjusted cosine similarity for weight calculations, but the score prediction uses the Pearson centering approach to account for what users rated the current item. 
+    \\
+
+    I then simply averaged the scores (before rounding) provided by this item-based algorithm with the first user-based cosine similarity algorithm. This approach resulted in an error of 0.767.
+
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Mode of all}\\ \hline
+            GIVEN 5 & 0.893\\
+            GIVEN 10 & 0.826\\
+            GIVEN 20 & 0.814\\
+            OVERALL & 0.843\\
+        \end{tabular}
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Centered Item-Based}\\ \hline
+            GIVEN 5 & 0.877\\
+            GIVEN 10 & 0.789\\
+            GIVEN 20 & 0.745\\
+            OVERALL & 0.799\\
+        \end{tabular}
+        \begin{tabular}{l|l}
+            \multicolumn{2}{c}{Avg. Item and User-Based}\\ \hline
+            GIVEN 5 & 0.813\\
+            GIVEN 10 & 0.756\\
+            GIVEN 20 & 0.738\\
+            OVERALL MAE & 0.767\\
+         \end{tabular}
+    \end{table}
+\end{homeworkProblem}
+\begin{homeworkProblem}
+    \textbf{Results Discussion}
+    \\
+
+    User-based approaches have limited effectiveness due to the nature of our data. Users have limited numbers of prior ratings available to us, so focusing exclusively on user data puts an upper limit on prediction accuracy.
+    \\
+
+    As mentioned earlier, there are likely lingering problems with my Pearson correlation predicting algorithm, as these observed results are worse than expected. Results for the remaining algorithms seem reasonable, however.
+    \\
+
+    Item-based filtering seems to be slightly more effective at predicting ratings, possibly because the adjusted cosine algorithm combines both information about the item itself and the users that have rated the item.
+    \\
+
+    As expected, combining both user and item-based algorithms results in lower observed errors, as we are using more of the information available to us to make an educated prediction.
+   
+\end{homeworkProblem}
+\pagebreak
+\section{Appendix}
+
+\lstinputlisting[language=python]{../similarity.py}
+\lstinputlisting[language=python]{../recommend.py}
+
+\end{document}

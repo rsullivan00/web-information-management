@@ -6,6 +6,7 @@ from similarity import (
     pearson_correlation,
     filter_common
 )
+from scipy.stats import pearsonr
 
 
 class SimilarityTests(unittest.TestCase):
@@ -49,22 +50,28 @@ class SimilarityTests(unittest.TestCase):
     pearson_correlation_tests = (
         (
             (np.array([4, 4, 1, 4, 3]), np.array([5, 4, 2, 0, 3])),
-            0.9365
+            0.91287093
         ),
         (
             (np.array([5, 4, 2, 0, 3]), np.array([4, 4, 1, 4, 3])),
-            0.9365
+            0.91287093
         ),
         (
             (np.array([1, 0, -1]), np.array([-1, 0, 1])),
             -1.0
+        ),
+        (
+            (np.array([1, 1, 0, 0]), np.array([0, 0, 1, -1])),
+            0
         )
     )
 
     def test_pearson_correlation(self):
         for vecs, expected in self.pearson_correlation_tests:
+            p = pearsonr(vecs[0], vecs[1])
+            print(p, sum(p))
             result = pearson_correlation(vecs[0], vecs[1])
-            self.assertAlmostEqual(result, expected, places=3)
+            self.assertAlmostEqual(result, expected, places=5)
 
     filter_common_tests = (
         (

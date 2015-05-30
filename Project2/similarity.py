@@ -11,17 +11,13 @@ def vector_norm(v):
 def filter_common(v1, v2):
     """
     Returns new vectors (a, b) after filtering any
-    indices where an element in a or b is 0 or None.
+    indices where an element in a or b <= 0.
     """
-#    a = [x for i, x in enumerate(v1) if x != 0 and v2[i] != 0]
-#    b = [x for i, x in enumerate(v2) if x != 0 and v1[i] != 0]
-#    return np.array(a), np.array(b)
-
     v1_new = []
     v2_new = []
     for i, x in enumerate(v1):
         y = v2[i]
-        if y and x:
+        if y > 0 and x > 0:
             v1_new.append(x)
             v2_new.append(y)
 
@@ -52,16 +48,38 @@ def cosine_similarity(a, b):
     return sim
 
 
+def adj_cosine_similarity(a, b, users):
+    """
+    Returns a float in [-1, 1].
+    a and b are items, containing user ratings.
+    """
+    if not hasattr(adj_cosine_similarity, 'avgs'):
+        filtered_users = [
+            [x for x in u if x > 0] for u in users]
+        adj_cosine_similarity.avgs = [np.mean(u) for u in filtered_users]
+
+    avgs = adj_cosine_similarity.avgs
+    a_adj = np.subtract(a, avgs)
+    b_adj = np.subtract(b, avgs)
+    a_new, b_new = filter_common(a_adj, b_adj)
+
+    return cosine_similarity(a_new, b_new)
+
+
 def pearson_correlation(a, b):
     """
     Computes the pearson correlation between two vectors.
     Returns a float in [-1, 1].
     """
     a_new, b_new = filter_common(a, b)
-    mean_a = np.mean(a_new)
-    mean_b = np.mean(b_new)
-    a_adj = np.subtract(a_new, mean_a)
-    b_adj = np.subtract(b_new, mean_b)
-
-    w = cosine_similarity(a_adj, b_adj)
-    return w
+    a_mean = a_new.mean()
+    b_mean = b_new.mean()
+    a_adj = np.subtract(a_new, a_mean[np.newaxis])
+    b_adj = np.subtract(b_new, b_mean[np.newaxis])
+    num = np.dot(a_adj, b_adj)
+    sum_sq_a = np.dot(a_adj, a_adj)
+    sum_sq_b = np.dot(b_adj, b_adj)
+    denom = np.sqrt(sum_sq_a * sum_sq_b)
+    if denom == 0:
+        return 0
+    return num/denom
